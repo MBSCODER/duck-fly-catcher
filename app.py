@@ -120,6 +120,7 @@ class DuckGame:
         self.combo = 0
         self.time_left = 60
         self.game_active = True
+        self.character = "speckles"  # "speckles" (Dark Cap) | "snowy" (White Duck)
         self.last_tick = time.time()
 
         self.flies = []
@@ -133,9 +134,16 @@ class DuckGame:
         self.root.bind("<space>", self.on_click)
         self.root.bind("<r>", lambda e: self.restart())
         self.root.bind("<R>", lambda e: self.restart())
+        self.root.bind("<c>", lambda e: self.toggle_character())
+        self.root.bind("<C>", lambda e: self.toggle_character())
+        self.root.bind("<Tab>", lambda e: self.toggle_character())
 
         # Start game loop
         self.update_loop()
+
+    def toggle_character(self):
+        self.character = "snowy" if self.character == "speckles" else "speckles"
+        self.play_sound("snap")
 
     def on_mouse_move(self, event):
         self.target_x = event.x
@@ -337,37 +345,68 @@ class DuckGame:
             fill="#e67e22", outline="#d35400"
         )
 
-        # Duck Body: Mottled brown & speckled feathers (exact match to photo)
-        # Main body oval
-        self.canvas.create_oval(
-            self.duck_body_x - 90, self.duck_body_y - 45,
-            self.duck_body_x + 90, self.duck_body_y + 75,
-            fill="#8b5a2b", outline="#6e4720", width=2
-        )
-        # Speckled brown feather patterns on flank
-        speckle_colors = ["#a0522d", "#cd853f", "#f5deb3", "#5c3317"]
-        random.seed(42)  # Consistent texture
-        for _ in range(40):
-            sx = random.uniform(self.duck_body_x - 70, self.duck_body_x + 70)
-            sy = random.uniform(self.duck_body_y - 25, self.duck_body_y + 60)
-            col = random.choice(speckle_colors)
-            self.canvas.create_arc(sx - 8, sy - 4, sx + 8, sy + 4, start=0, extent=180, outline=col, width=2)
-        random.seed()
+        # Duck Body & Plumage (Speckles vs Snowy)
+        if self.character == "snowy":
+            # Snowy: Pure white body with subtle gray shading
+            self.canvas.create_oval(
+                self.duck_body_x - 90, self.duck_body_y - 45,
+                self.duck_body_x + 90, self.duck_body_y + 75,
+                fill="#ffffff", outline="#d5dbdb", width=2
+            )
+            # Distinctive dark feather smudge on flank (from photo)
+            self.canvas.create_oval(
+                self.duck_body_x - 45, self.duck_body_y + 15,
+                self.duck_body_x - 20, self.duck_body_y + 35,
+                fill="#2c3e50", outline=""
+            )
+            self.canvas.create_oval(
+                self.duck_body_x - 20, self.duck_body_y + 10,
+                self.duck_body_x - 10, self.duck_body_y + 20,
+                fill="#34495e", outline=""
+            )
+            # Soft feather texture
+            for sx, sy in [(-60, 0), (-30, -10), (0, 15), (30, 0)]:
+                self.canvas.create_arc(
+                    self.duck_body_x + sx - 8, self.duck_body_y + sy - 4,
+                    self.duck_body_x + sx + 8, self.duck_body_y + sy + 4,
+                    start=0, extent=180, outline="#e2e8f0", width=2
+                )
+            # Tail feathers (White)
+            self.canvas.create_polygon(
+                self.duck_body_x - 85, self.duck_body_y - 20,
+                self.duck_body_x - 125, self.duck_body_y - 35,
+                self.duck_body_x - 90, self.duck_body_y + 15,
+                fill="#f1f5f9", outline="#e2e8f0"
+            )
+        else:
+            # Speckles: Mottled brown & speckled feathers
+            self.canvas.create_oval(
+                self.duck_body_x - 90, self.duck_body_y - 45,
+                self.duck_body_x + 90, self.duck_body_y + 75,
+                fill="#8b5a2b", outline="#6e4720", width=2
+            )
+            speckle_colors = ["#a0522d", "#cd853f", "#f5deb3", "#5c3317"]
+            random.seed(42)
+            for _ in range(40):
+                sx = random.uniform(self.duck_body_x - 70, self.duck_body_x + 70)
+                sy = random.uniform(self.duck_body_y - 25, self.duck_body_y + 60)
+                col = random.choice(speckle_colors)
+                self.canvas.create_arc(sx - 8, sy - 4, sx + 8, sy + 4, start=0, extent=180, outline=col, width=2)
+            random.seed()
 
-        # White breast and bib
-        self.canvas.create_oval(
-            self.duck_body_x + 10, self.duck_body_y - 40,
-            self.duck_body_x + 85, self.duck_body_y + 40,
-            fill="#fdfefe", outline="#d5dbdb"
-        )
-
-        # Tail feathers
-        self.canvas.create_polygon(
-            self.duck_body_x - 85, self.duck_body_y - 20,
-            self.duck_body_x - 125, self.duck_body_y - 35,
-            self.duck_body_x - 90, self.duck_body_y + 15,
-            fill="#5c3317"
-        )
+            # White breast and bib
+            self.canvas.create_oval(
+                self.duck_body_x + 10, self.duck_body_y - 40,
+                self.duck_body_x + 85, self.duck_body_y + 40,
+                fill="#fdfefe", outline="#d5dbdb"
+            )
+            # Tail feathers
+            self.canvas.create_polygon(
+                self.duck_body_x - 85, self.duck_body_y - 20,
+                self.duck_body_x - 125, self.duck_body_y - 35,
+                self.duck_body_x - 90, self.duck_body_y + 15,
+                fill="#5c3317"
+            )
 
         # Neck (stretching from body to head)
         neck_base_x = self.duck_body_x + 35
@@ -390,16 +429,19 @@ class DuckGame:
             fill="#ffffff", outline=""
         )
 
-        # Iconic Dark/Black mottled crown & cap (from the photo!)
-        self.canvas.create_arc(
-            head_x - 25, head_y - 26,
-            head_x + 25, head_y + 15,
-            start=40, extent=160,
-            fill="#1c2833", outline="#17202a"
-        )
-        # Speckled crown fringe
-        for ox in [-12, -6, 0, 6, 12]:
-            self.canvas.create_oval(head_x + ox, head_y - 18, head_x + ox + 5, head_y - 13, fill="#2c3e50")
+        if self.character == "speckles":
+            # Iconic Dark/Black mottled crown & cap (from the photo!)
+            self.canvas.create_arc(
+                head_x - 25, head_y - 26,
+                head_x + 25, head_y + 15,
+                start=40, extent=160,
+                fill="#1c2833", outline="#17202a"
+            )
+            for ox in [-12, -6, 0, 6, 12]:
+                self.canvas.create_oval(head_x + ox, head_y - 18, head_x + ox + 5, head_y - 13, fill="#2c3e50")
+        else:
+            # Snowy: Small crown speck
+            self.canvas.create_oval(head_x - 4, head_y - 24, head_x + 4, head_y - 19, fill="#475569")
 
         # Eye: Bright bead eye with reflection
         eye_x = head_x + math.cos(angle - 0.4) * 10
@@ -407,7 +449,7 @@ class DuckGame:
         self.canvas.create_oval(eye_x - 4, eye_y - 4, eye_x + 4, eye_y + 4, fill="#17202a")
         self.canvas.create_oval(eye_x - 1, eye_y - 2, eye_x + 2, eye_y + 1, fill="#ffffff")
 
-        # Yellow-Orange Beak with opening/closing snap animation
+        # Beak with opening/closing snap animation
         beak_angle = math.atan2(beak_y - head_y, beak_x - head_x)
         gap = 14 * self.beak_open
 
@@ -417,23 +459,38 @@ class DuckGame:
         ub_tip_x = head_x + math.cos(beak_angle) * 52
         ub_tip_y = head_y + math.sin(beak_angle) * 52 - gap / 2
 
+        bill_color = "#c5a059" if self.character == "snowy" else "#f39c12"
+        bill_outline = "#8c6d32" if self.character == "snowy" else "#d68910"
+
         self.canvas.create_polygon(
             ub_x1, ub_y1 - 6,
             ub_tip_x, ub_tip_y,
             ub_x1, ub_y1 + 4,
-            fill="#f39c12", outline="#d68910", width=2
+            fill=bill_color, outline=bill_outline, width=2
         )
-        # Nostril bean mark on bill
-        self.canvas.create_oval(ub_x1 + 6, ub_y1 - 2, ub_x1 + 10, ub_y1 + 1, fill="#7e5109")
+
+        if self.character == "snowy":
+            # Dark smudge running down Snowy's bill (matching photo)
+            smudge_mid_x = (ub_x1 + ub_tip_x) / 2
+            smudge_mid_y = (ub_y1 + ub_tip_y) / 2
+            self.canvas.create_oval(
+                smudge_mid_x - 7, smudge_mid_y - 3,
+                smudge_mid_x + 7, smudge_mid_y + 3,
+                fill="#3a342a", outline=""
+            )
+        else:
+            # Nostril bean mark on bill
+            self.canvas.create_oval(ub_x1 + 6, ub_y1 - 2, ub_x1 + 10, ub_y1 + 1, fill="#7e5109")
 
         # Lower bill
         lb_y1 = head_y + math.sin(beak_angle) * 16 + gap / 2
         lb_tip_y = head_y + math.sin(beak_angle) * 50 + gap / 2
+        lower_bill_col = "#b59247" if self.character == "snowy" else "#e67e22"
         self.canvas.create_polygon(
             ub_x1, lb_y1 - 3,
             ub_tip_x - 4, lb_tip_y,
             ub_x1, lb_y1 + 5,
-            fill="#e67e22", outline="#d35400", width=1
+            fill=lower_bill_col, outline=bill_outline, width=1
         )
 
         # Crosshair / aim helper at target
@@ -471,6 +528,16 @@ class DuckGame:
             font=("Helvetica", 14, "bold")
         )
 
+        char_name = "🦆 Speckles" if self.character == "speckles" else "🦢 Snowy"
+        char_color = "#38bdf8" if self.character == "speckles" else "#ffffff"
+        self.canvas.create_text(
+            630, 40,
+            text=f"Duck: {char_name} [C]",
+            anchor="w",
+            fill=char_color,
+            font=("Helvetica", 13, "bold")
+        )
+
         time_color = "#e74c3c" if self.time_left < 10 else "#ecf0f1"
         self.canvas.create_text(
             self.width - 35, 40,
@@ -484,7 +551,7 @@ class DuckGame:
         if self.game_active:
             self.canvas.create_text(
                 self.width // 2, self.height - 20,
-                text="Move cursor to aim neck | Left-Click or Spacebar to SNAP bill | Press 'R' to Restart",
+                text="Move cursor to aim neck | Left-Click to SNAP bill | Press 'C' to Switch Duck | Press 'R' to Restart",
                 fill="#bdc3c7",
                 font=("Helvetica", 10)
             )
