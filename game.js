@@ -21,10 +21,14 @@ const newBestBadge = document.getElementById('newBestBadge');
 const switchCharHeaderBtn = document.getElementById('switchCharHeaderBtn');
 const duckOptionBtns = document.querySelectorAll('.duck-option');
 
-let selectedCharacter = 'speckles'; // 'speckles' (Dark-Capped) | 'snowy' (White Duck)
+let selectedCharacter = localStorage.getItem('duck_character') || 'speckles'; // 'speckles' | 'snowy'
+let selectedHat = localStorage.getItem('duck_hat') || 'none'; // 'none' | 'tophat' | 'beanie' | 'sunglasses' | 'crown' | 'wizard'
+const hatList = ['none', 'tophat', 'beanie', 'sunglasses', 'crown', 'wizard'];
+const hatOptionBtns = document.querySelectorAll('.hat-option');
 
 function setCharacter(charId) {
   selectedCharacter = charId;
+  localStorage.setItem('duck_character', charId);
   duckOptionBtns.forEach(btn => {
     btn.classList.toggle('active', btn.dataset.character === charId);
   });
@@ -37,6 +41,21 @@ function setCharacter(charId) {
       switchCharHeaderBtn.style.color = '#38bdf8';
     }
   }
+}
+
+function setHat(hatId) {
+  selectedHat = hatId;
+  localStorage.setItem('duck_hat', hatId);
+  hatOptionBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.hat === hatId);
+  });
+}
+
+function cycleHat() {
+  const idx = hatList.indexOf(selectedHat);
+  const next = hatList[(idx + 1) % hatList.length];
+  setHat(next);
+  playSound('quack');
 }
 
 duckOptionBtns.forEach(btn => {
@@ -53,6 +72,17 @@ if (switchCharHeaderBtn) {
     playSound('quack');
   });
 }
+
+hatOptionBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    setHat(btn.dataset.hat);
+    playSound('quack');
+  });
+});
+
+// Restore saved selections on load
+setCharacter(selectedCharacter);
+setHat(selectedHat);
 
 // Audio Context (Synthesized sound effects - zero external audio assets needed!)
 let audioCtx = null;
@@ -403,6 +433,8 @@ window.addEventListener('keydown', (e) => {
     const nextChar = selectedCharacter === 'speckles' ? 'snowy' : 'speckles';
     setCharacter(nextChar);
     playSound('quack');
+  } else if (e.key === 'h' || e.key === 'H') {
+    cycleHat();
   }
 });
 
@@ -541,6 +573,143 @@ function drawBackground() {
   ctx.beginPath();
   ctx.ellipse(duck.bodyX + 10, duck.bodyY + 70, 95, 24, 0, 0, Math.PI * 2);
   ctx.fill();
+}
+
+function drawHat(headX, headY) {
+  if (selectedHat === 'none') return;
+  ctx.save();
+  ctx.translate(headX, headY);
+
+  if (selectedHat === 'tophat') {
+    // Black Top Hat
+    ctx.fillStyle = '#1a1a2e';
+    // Brim
+    ctx.beginPath();
+    ctx.ellipse(0, -24, 30, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Cylinder
+    ctx.fillRect(-16, -60, 32, 38);
+    // Top
+    ctx.beginPath();
+    ctx.ellipse(0, -60, 16, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Band
+    ctx.fillStyle = '#c0392b';
+    ctx.fillRect(-16, -38, 32, 5);
+
+  } else if (selectedHat === 'beanie') {
+    // Cozy Beanie
+    ctx.fillStyle = '#e74c3c';
+    // Cap dome
+    ctx.beginPath();
+    ctx.arc(0, -22, 26, Math.PI, 0);
+    ctx.closePath();
+    ctx.fill();
+    // Brim fold
+    ctx.fillStyle = '#c0392b';
+    ctx.beginPath();
+    ctx.ellipse(0, -22, 28, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Pom-pom
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(0, -48, 8, 0, Math.PI * 2);
+    ctx.fill();
+
+  } else if (selectedHat === 'sunglasses') {
+    // Cool Shades
+    ctx.fillStyle = '#1a1a2e';
+    // Bridge
+    ctx.fillRect(-5, -4, 10, 3);
+    // Left lens
+    ctx.beginPath();
+    ctx.ellipse(-14, -3, 12, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Right lens
+    ctx.beginPath();
+    ctx.ellipse(14, -3, 12, 9, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Lens glare
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+    ctx.beginPath();
+    ctx.ellipse(-16, -5, 5, 3, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(12, -5, 5, 3, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+    // Arms
+    ctx.strokeStyle = '#1a1a2e';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(-26, -3);
+    ctx.lineTo(-32, 4);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(26, -3);
+    ctx.lineTo(32, 4);
+    ctx.stroke();
+
+  } else if (selectedHat === 'crown') {
+    // Royal Crown
+    ctx.fillStyle = '#f1c40f';
+    ctx.strokeStyle = '#d4a017';
+    ctx.lineWidth = 1.5;
+    // Crown body
+    ctx.beginPath();
+    ctx.moveTo(-22, -22);
+    ctx.lineTo(-22, -38);
+    ctx.lineTo(-12, -30);
+    ctx.lineTo(0, -46);
+    ctx.lineTo(12, -30);
+    ctx.lineTo(22, -38);
+    ctx.lineTo(22, -22);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    // Base band
+    ctx.fillStyle = '#d4a017';
+    ctx.fillRect(-22, -24, 44, 5);
+    // Jewels
+    ctx.fillStyle = '#e74c3c';
+    ctx.beginPath();
+    ctx.arc(0, -22, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#3498db';
+    ctx.beginPath();
+    ctx.arc(-12, -22, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(12, -22, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+  } else if (selectedHat === 'wizard') {
+    // Wizard Hat
+    ctx.fillStyle = '#2c3e8f';
+    // Cone
+    ctx.beginPath();
+    ctx.moveTo(-26, -22);
+    ctx.lineTo(0, -72);
+    ctx.lineTo(26, -22);
+    ctx.closePath();
+    ctx.fill();
+    // Brim
+    ctx.fillStyle = '#1a2766';
+    ctx.beginPath();
+    ctx.ellipse(0, -22, 32, 8, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Stars on hat
+    ctx.fillStyle = '#f1c40f';
+    ctx.font = '10px sans-serif';
+    ctx.fillText('★', -8, -42);
+    ctx.fillText('✦', 6, -34);
+    ctx.font = '7px sans-serif';
+    ctx.fillText('★', -3, -54);
+    // Moon
+    ctx.font = '9px sans-serif';
+    ctx.fillText('☽', 10, -50);
+  }
+
+  ctx.restore();
 }
 
 function drawDuck() {
@@ -777,6 +946,9 @@ function drawDuck() {
   }
 
   ctx.restore();
+
+  // Draw the selected hat/accessory on the duck's head
+  drawHat(duck.headX, duck.headY);
 
   // Crosshair guide at cursor
   ctx.save();
