@@ -245,6 +245,54 @@ canvas {
   text-align: center;
 }
 
+/* Hat Selector */
+.hat-select {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.hat-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.hat-option {
+  background: #0f172a;
+  border: 2px solid #334155;
+  border-radius: 10px;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #cbd5e1;
+  font-family: 'Fredoka', sans-serif;
+}
+
+.hat-option:hover {
+  border-color: #a78bfa;
+  background: #1e1b3a;
+}
+
+.hat-option.active {
+  border-color: #a78bfa;
+  background: rgba(167, 139, 250, 0.15);
+  box-shadow: 0 0 14px rgba(167, 139, 250, 0.3);
+  color: #ffffff;
+}
+
+.hat-icon {
+  font-size: 1.4rem;
+}
+
+.hat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
 .fly-guide {
   display: flex;
   flex-direction: column;
