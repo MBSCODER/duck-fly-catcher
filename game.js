@@ -18,6 +18,41 @@ const finalScoreEl = document.getElementById('finalScore');
 const finalFliesEl = document.getElementById('finalFlies');
 const finalComboEl = document.getElementById('finalCombo');
 const newBestBadge = document.getElementById('newBestBadge');
+const switchCharHeaderBtn = document.getElementById('switchCharHeaderBtn');
+const duckOptionBtns = document.querySelectorAll('.duck-option');
+
+let selectedCharacter = 'speckles'; // 'speckles' (Dark-Capped) | 'snowy' (White Duck)
+
+function setCharacter(charId) {
+  selectedCharacter = charId;
+  duckOptionBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.character === charId);
+  });
+  if (switchCharHeaderBtn) {
+    if (charId === 'snowy') {
+      switchCharHeaderBtn.innerHTML = '🦢 Snowy';
+      switchCharHeaderBtn.style.color = '#ffffff';
+    } else {
+      switchCharHeaderBtn.innerHTML = '🦆 Speckles';
+      switchCharHeaderBtn.style.color = '#38bdf8';
+    }
+  }
+}
+
+duckOptionBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    setCharacter(btn.dataset.character);
+    playSound('quack');
+  });
+});
+
+if (switchCharHeaderBtn) {
+  switchCharHeaderBtn.addEventListener('click', () => {
+    const nextChar = selectedCharacter === 'speckles' ? 'snowy' : 'speckles';
+    setCharacter(nextChar);
+    playSound('quack');
+  });
+}
 
 // Audio Context (Synthesized sound effects - zero external audio assets needed!)
 let audioCtx = null;
@@ -364,6 +399,10 @@ window.addEventListener('keydown', (e) => {
     triggerSnap();
   } else if (e.key === 'r' || e.key === 'R') {
     restartGame();
+  } else if (e.key === 'c' || e.key === 'C') {
+    const nextChar = selectedCharacter === 'speckles' ? 'snowy' : 'speckles';
+    setCharacter(nextChar);
+    playSound('quack');
   }
 });
 
@@ -531,41 +570,79 @@ function drawDuck() {
   ctx.fill();
   ctx.stroke();
 
-  // 2. Duck Body: Mottled brown with speckled pattern (exact match to photo)
+  // 2. Duck Body
   ctx.save();
-  ctx.fillStyle = '#8b5a2b';
-  ctx.beginPath();
-  ctx.ellipse(duck.bodyX, duck.bodyY + 10, 90, 60, -0.1, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Tail feathers pointing back
-  ctx.fillStyle = '#5c3317';
-  ctx.beginPath();
-  ctx.moveTo(duck.bodyX - 85, duck.bodyY - 5);
-  ctx.lineTo(duck.bodyX - 130, duck.bodyY - 20);
-  ctx.lineTo(duck.bodyX - 90, duck.bodyY + 30);
-  ctx.closePath();
-  ctx.fill();
-
-  // Speckled feather patterns on flank
-  const speckles = [
-    {x: -50, y: 0}, {x: -30, y: 15}, {x: -10, y: 30}, {x: 10, y: 20},
-    {x: -40, y: -15}, {x: -20, y: -5}, {x: 0, y: 10}, {x: 20, y: 5},
-    {x: -60, y: 10}, {x: -35, y: 25}, {x: -15, y: -20}, {x: 5, y: -10}
-  ];
-  ctx.strokeStyle = '#d7ba89';
-  ctx.lineWidth = 2.5;
-  speckles.forEach(s => {
+  if (selectedCharacter === 'snowy') {
+    // White Duck: Pure snowy white body with subtle soft gray shading
+    ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.arc(duck.bodyX + s.x, duck.bodyY + s.y, 7, 0, Math.PI);
-    ctx.stroke();
-  });
+    ctx.ellipse(duck.bodyX, duck.bodyY + 10, 90, 60, -0.1, 0, Math.PI * 2);
+    ctx.fill();
 
-  // White breast & bib
-  ctx.fillStyle = '#ffffff';
-  ctx.beginPath();
-  ctx.ellipse(duck.bodyX + 40, duck.bodyY - 10, 45, 45, 0.3, 0, Math.PI * 2);
-  ctx.fill();
+    // Tail feathers (White)
+    ctx.fillStyle = '#f1f5f9';
+    ctx.beginPath();
+    ctx.moveTo(duck.bodyX - 85, duck.bodyY - 5);
+    ctx.lineTo(duck.bodyX - 130, duck.bodyY - 20);
+    ctx.lineTo(duck.bodyX - 90, duck.bodyY + 30);
+    ctx.closePath();
+    ctx.fill();
+
+    // Distinctive dark feather patch on flank (from photo)
+    ctx.fillStyle = '#2c3e50';
+    ctx.beginPath();
+    ctx.ellipse(duck.bodyX - 35, duck.bodyY + 25, 14, 9, 0.4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(duck.bodyX - 18, duck.bodyY + 16, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Soft feather contours
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 2;
+    [
+      {x: -50, y: 0}, {x: -25, y: -5}, {x: 0, y: 12}, {x: 20, y: 5}
+    ].forEach(s => {
+      ctx.beginPath();
+      ctx.arc(duck.bodyX + s.x, duck.bodyY + s.y, 7, 0, Math.PI);
+      ctx.stroke();
+    });
+  } else {
+    // Speckles: Mottled brown with speckled pattern (from photo)
+    ctx.fillStyle = '#8b5a2b';
+    ctx.beginPath();
+    ctx.ellipse(duck.bodyX, duck.bodyY + 10, 90, 60, -0.1, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Tail feathers (Dark brown)
+    ctx.fillStyle = '#5c3317';
+    ctx.beginPath();
+    ctx.moveTo(duck.bodyX - 85, duck.bodyY - 5);
+    ctx.lineTo(duck.bodyX - 130, duck.bodyY - 20);
+    ctx.lineTo(duck.bodyX - 90, duck.bodyY + 30);
+    ctx.closePath();
+    ctx.fill();
+
+    // Speckled feather patterns on flank
+    const speckles = [
+      {x: -50, y: 0}, {x: -30, y: 15}, {x: -10, y: 30}, {x: 10, y: 20},
+      {x: -40, y: -15}, {x: -20, y: -5}, {x: 0, y: 10}, {x: 20, y: 5},
+      {x: -60, y: 10}, {x: -35, y: 25}, {x: -15, y: -20}, {x: 5, y: -10}
+    ];
+    ctx.strokeStyle = '#d7ba89';
+    ctx.lineWidth = 2.5;
+    speckles.forEach(s => {
+      ctx.beginPath();
+      ctx.arc(duck.bodyX + s.x, duck.bodyY + s.y, 7, 0, Math.PI);
+      ctx.stroke();
+    });
+
+    // White breast & bib
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.ellipse(duck.bodyX + 40, duck.bodyY - 10, 45, 45, 0.3, 0, Math.PI * 2);
+    ctx.fill();
+  }
   ctx.restore();
 
   // 3. Neck (extending towards head)
@@ -579,7 +656,7 @@ function drawDuck() {
   ctx.stroke();
   ctx.restore();
 
-  // 4. Head & Crown (The black-capped duck from the photo!)
+  // 4. Head & Crown
   ctx.save();
   ctx.translate(duck.headX, duck.headY);
 
@@ -589,25 +666,33 @@ function drawDuck() {
   ctx.arc(0, 0, 26, 0, Math.PI * 2);
   ctx.fill();
 
-  // Iconic Dark / Black-Green Mottled Crown Cap
-  ctx.fillStyle = '#1c2833';
-  ctx.beginPath();
-  ctx.arc(0, -2, 26, Math.PI * 1.15, Math.PI * 1.95);
-  ctx.closePath();
-  ctx.fill();
-
-  // Dark cap spots around crown
-  ctx.fillStyle = '#2c3e50';
-  for (let ox of [-14, -7, 0, 7, 14]) {
+  if (selectedCharacter === 'speckles') {
+    // Iconic Dark / Black-Green Mottled Crown Cap
+    ctx.fillStyle = '#1c2833';
     ctx.beginPath();
-    ctx.arc(ox, -12, 3.5, 0, Math.PI * 2);
+    ctx.arc(0, -2, 26, Math.PI * 1.15, Math.PI * 1.95);
+    ctx.closePath();
+    ctx.fill();
+
+    // Dark cap spots around crown
+    ctx.fillStyle = '#2c3e50';
+    for (let ox of [-14, -7, 0, 7, 14]) {
+      ctx.beginPath();
+      ctx.arc(ox, -12, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Dark spot behind eye
+    ctx.beginPath();
+    ctx.arc(4, 0, 5, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    // Snowy: Small subtle top crown fleck (matching photo)
+    ctx.fillStyle = '#475569';
+    ctx.beginPath();
+    ctx.ellipse(-2, -22, 6, 3, 0.2, 0, Math.PI * 2);
     ctx.fill();
   }
-
-  // Dark spot behind eye (matching photo)
-  ctx.beginPath();
-  ctx.arc(4, 0, 5, 0, Math.PI * 2);
-  ctx.fill();
 
   // Duck Eye: Dark pupil with white gleam
   ctx.fillStyle = '#111827';
@@ -625,34 +710,71 @@ function drawDuck() {
 
   const gap = 16 * duck.beakOpen;
 
-  // Upper Bill (Bright Yellow-Orange with black bean tip)
-  ctx.fillStyle = '#f39c12';
-  ctx.strokeStyle = '#d68910';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(18, -9 - gap / 2);
-  ctx.lineTo(58, -3 - gap / 2);
-  ctx.lineTo(58, 2 - gap / 2);
-  ctx.lineTo(18, 5 - gap / 2);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
+  if (selectedCharacter === 'snowy') {
+    // Snowy's Beak: Dusky olive-yellow with dark smudge/mottling
+    ctx.fillStyle = '#c5a059';
+    ctx.strokeStyle = '#8c6d32';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(18, -9 - gap / 2);
+    ctx.lineTo(58, -3 - gap / 2);
+    ctx.lineTo(58, 2 - gap / 2);
+    ctx.lineTo(18, 5 - gap / 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
 
-  // Beak nail / bean tip (dark mark on tip of beak)
-  ctx.fillStyle = '#5c3317';
-  ctx.beginPath();
-  ctx.ellipse(54, -1 - gap / 2, 3.5, 2.5, 0, 0, Math.PI * 2);
-  ctx.fill();
+    // Dark smudge on bill (exact match to photo!)
+    ctx.fillStyle = '#3a342a';
+    ctx.beginPath();
+    ctx.ellipse(38, -3 - gap / 2, 12, 4, 0.1, 0, Math.PI * 2);
+    ctx.fill();
 
-  // Lower Bill
-  ctx.fillStyle = '#e67e22';
-  ctx.beginPath();
-  ctx.moveTo(18, 0 + gap / 2);
-  ctx.lineTo(52, 2 + gap / 2);
-  ctx.lineTo(52, 6 + gap / 2);
-  ctx.lineTo(18, 6 + gap / 2);
-  ctx.closePath();
-  ctx.fill();
+    // Bill tip nail
+    ctx.fillStyle = '#26221c';
+    ctx.beginPath();
+    ctx.ellipse(54, -1 - gap / 2, 4, 2.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Lower bill
+    ctx.fillStyle = '#b59247';
+    ctx.beginPath();
+    ctx.moveTo(18, 0 + gap / 2);
+    ctx.lineTo(52, 2 + gap / 2);
+    ctx.lineTo(52, 6 + gap / 2);
+    ctx.lineTo(18, 6 + gap / 2);
+    ctx.closePath();
+    ctx.fill();
+  } else {
+    // Speckles' Beak: Bright Yellow-Orange with black bean tip
+    ctx.fillStyle = '#f39c12';
+    ctx.strokeStyle = '#d68910';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(18, -9 - gap / 2);
+    ctx.lineTo(58, -3 - gap / 2);
+    ctx.lineTo(58, 2 - gap / 2);
+    ctx.lineTo(18, 5 - gap / 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Beak nail / bean tip
+    ctx.fillStyle = '#5c3317';
+    ctx.beginPath();
+    ctx.ellipse(54, -1 - gap / 2, 3.5, 2.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Lower Bill
+    ctx.fillStyle = '#e67e22';
+    ctx.beginPath();
+    ctx.moveTo(18, 0 + gap / 2);
+    ctx.lineTo(52, 2 + gap / 2);
+    ctx.lineTo(52, 6 + gap / 2);
+    ctx.lineTo(18, 6 + gap / 2);
+    ctx.closePath();
+    ctx.fill();
+  }
 
   ctx.restore();
 
