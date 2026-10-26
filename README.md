@@ -1,8 +1,17 @@
 # 🦆 Duck Fly Catcher
 
-An interactive arcade game starring the iconic dark-capped, brown-speckled domestic duck! Help the duck stretch its neck and snap buzzing flies out of the air.
+An interactive arcade game starring the beloved duck duo from real life! Help the ducks stretch their necks and snap buzzing flies out of the air.
 
 Playable directly in your **web browser** or as a native **Python** desktop game.
+
+---
+
+## 🦆 Playable Duck Characters
+Choose your favorite duck from the photo:
+1. **🦆 Speckles (The Dark-Capped Duck)**:
+   - Features an iconic dark-green/black speckled crown cap, crisp white bib, mottled brown feather flanks, and a bright orange-yellow bill.
+2. **🦢 Snowy (The White Duck)**:
+   - Features pure snowy-white plumage, subtle flank spot, clean crown, and a distinctive olive-yellow bill with dark mottled markings.
 
 ---
 
@@ -36,7 +45,8 @@ python app.py --web
 
 - **Realistic Duck Mechanics**:
   - The duck stretches its neck and follows your cursor or touch.
-  - Left-Click / Spacebar makes the duck snap its yellow-orange bill open and shut with an audible quack/chomp!
+  - Left-Click / Spacebar makes the duck snap its bill open and shut with an audible quack/chomp!
+  - Switch between **Speckles** and **Snowy** anytime by pressing `C` or clicking the Duck button.
 - **Flies Variety**:
   - 🪰 **Common Housefly** (10 pts): Standard wandering flight.
   - 🔴 **Speedy Fly** (25 pts): Fast zig-zag darting flight.
@@ -55,9 +65,11 @@ python app.py --web
 | :--- | :--- |
 | **Aim Duck's Neck** | Move Mouse / Drag Touch |
 | **Snap Bill / Catch Fly** | Left-Click / Tap / Spacebar |
+| **Switch Duck Character** | Press `C` / Click Duck Pill |
 | **Restart Game** | Press `R` or Click "Play Again" |
 
 ---
 
 ## 🌟 Inspired by Real Ducks
-This game was crafted in homage to the real duo: the dark-capped brown mottled duck with the bright yellow bill and its white feathered friend!
+This game was crafted in homage to the real duck duo: the dark-capped brown mottled duck with the bright yellow bill and its white-feathered companion!
+
