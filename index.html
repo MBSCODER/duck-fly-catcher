@@ -37,6 +37,10 @@
           <span class="label">BEST</span>
           <span id="high-score" class="value">0</span>
         </div>
+        <div class="stat-card char-card">
+          <span class="label">DUCK</span>
+          <button id="switchCharHeaderBtn" class="char-switch-pill" title="Switch Duck">🦆 Speckles</button>
+        </div>
       </div>
     </header>
 
@@ -47,6 +51,23 @@
         <div class="modal">
           <h2>🦆 Feed the Duck!</h2>
           <p>Buzzing flies have invaded the balcony! Move your mouse (or drag on touch) to guide the duck's neck and <strong>Click / Tap / Press Spacebar</strong> to snap its bill!</p>
+
+          <div class="character-select">
+            <span class="select-label">Choose your Duck:</span>
+            <div class="duck-options">
+              <button class="duck-option active" data-character="speckles">
+                <span class="duck-avatar">🦆</span>
+                <span class="duck-name">Speckles</span>
+                <span class="duck-desc">Dark Cap & Brown Flanks</span>
+              </button>
+              <button class="duck-option" data-character="snowy">
+                <span class="duck-avatar">🦢</span>
+                <span class="duck-name">Snowy</span>
+                <span class="duck-desc">Pure White with Dark Bill</span>
+              </button>
+            </div>
+          </div>
+
           <div class="fly-guide">
             <div class="fly-pill"><span class="dot normal"></span> Common Fly: 10 pts</div>
             <div class="fly-pill"><span class="dot speedy"></span> Speedy Fly: 25 pts</div>
@@ -83,7 +104,7 @@
 
     <footer class="footer">
       <div class="controls-hint">
-        🎮 <strong>Controls:</strong> Aim with cursor / touch &bull; <strong>Click</strong> or <strong>Spacebar</strong> to snap beak &bull; Press <strong>R</strong> to restart
+        🎮 <strong>Controls:</strong> Aim with cursor / touch &bull; <strong>Click</strong> or <strong>Spacebar</strong> to snap beak &bull; Press <strong>C</strong> to switch duck &bull; Press <strong>R</strong> to restart
       </div>
       <div class="links">
         <a href="https://github.com/MBSCODER/duck-fly-catcher" target="_blank" rel="noopener">View GitHub Repository</a>
